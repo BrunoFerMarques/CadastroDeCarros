@@ -4,6 +4,17 @@ Sistema de cadastro de carros, utilizando next.js
 
 
 
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+>>>>>>> efb96315fe3898566537ee0560655e9ae394268c
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
 ## Getting Started
