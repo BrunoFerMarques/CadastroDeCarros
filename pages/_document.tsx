@@ -11,7 +11,7 @@ export default function Document() {
         <a href="/" className="p-5"> <Image width = {100}src = {Carlogo} alt="Logo da empresa" /></a>
         <div className="p-10"><Menu/></div>
       </header>
-      <body className="antialiased">
+      <body className="antialiased overflow-hidden">
         <Main />
         <NextScript />
       </body>
