@@ -1,11 +1,12 @@
+import Link from "next/link"
 
 const Menu = () => {
   return (
     <div className="flex bg-black text-white align-center">
-      <a href="/create" className="m-5">Criar</a>
-      <a href="/update" className="m-5">Atualizar</a>
-      <a href="/delete" className="m-5">Deletar</a>
-      <a href="/read" className="m-5">Listar</a>
+      <Link href="/create" className="m-5">Criar</Link>
+      <Link href="/update" className="m-5">Atualizar</Link>
+      <Link href="/delete" className="m-5">Deletar</Link>
+      <Link href="/read" className="m-5">Listar</Link>
     </div>
   )
 }
