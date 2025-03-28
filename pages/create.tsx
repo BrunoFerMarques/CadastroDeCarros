@@ -2,14 +2,16 @@ import React, { useEffect } from "react"
 import { useState } from "react"
 import Header from "./components/Header"
 import { Car } from "../models/Car";
+import Link from "next/link";
+import { LinkOutlined } from "@mui/icons-material";
  
 const Create = () => {
-  const [data, setData] = useState<Car[]>([]);
+  const [dataCar, setdataCar] = useState<Car[]>([]);
   const [brand, setBrand] = useState('')
   const [model, setModel] = useState('')
   const [plate, setPlate] = useState('')
   const [price, setPrice] = useState('')
-  
+  const [isLogged, setIsLogged] = useState(false)
   const handleSave = (event: React.FormEvent) => {
     event.preventDefault()
     if (!brand || !model || !plate || !price) {
@@ -18,28 +20,33 @@ const Create = () => {
       return; // Impede que os dados sejam salvos
     }
     const newCar: Car = {brand, model,plate, price}
-    setData(prevData =>{
-      const newData = [...prevData, newCar]
-      console.log(newData);
-      return newData;
+    setdataCar(prevdataCar =>{
+      const newdataCar = [...prevdataCar, newCar]
+      console.log(newdataCar);
+      return newdataCar;
     })
     setBrand('')
     setModel('')
     setPlate('')
     setPrice('')
-    
   } 
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('data', JSON.stringify(data));
+      localStorage.setItem('dataCar', JSON.stringify(dataCar));
     }
-  }, [data]);
- 
+  }, [dataCar]);
+
   return (
+
       <div>
         <Header/>
-      <div className=" bg-gradient-to-r from-gray-900 via-gray-950 to-black min-h-screen flex items-center justify-center"> 
+        <div className=" bg-gradient-to-r from-gray-900 via-gray-950 to-black min-h-screen flex items-center justify-center text-white"> 
+      {isLogged == false ? 
+      (
+        <div>Para criar um anúncio, você precisa estar logado, <Link href="/client"><div className="font-bold">clique aqui e faça login ou registro. </div></Link></div>
+      ) : (
+      
         <form className="grid grid-cols-2 gap-4 bg-red-600 border-2 border-red-600 p-5" id="car-form" onSubmit={handleSave}>
           <div>
             <label className="block p-5 font-bold">Digite a marca do carro:</label>
@@ -95,9 +102,10 @@ const Create = () => {
             >Cadastrar</button>
           </div>
         </form>
-      </div>
+     
+      )}
+       </div>
     </div>
-    
   );
 };
 
