@@ -5,6 +5,9 @@ import Box from '@mui/material/Box';
 import { IconButton } from '@mui/material';
 import { Client } from '@/models/Client';
 import CloseIcon from '@mui/icons-material/Close';
+import Modalregistersucessfull from './Modalregistersucessfull';
+import client from '../client';
+
 
 interface ModalRegisterProps {
   isOpen: boolean;
@@ -32,32 +35,41 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ isOpen, onClose }) => {
   const [password, setPassword] = useState('') 
   const [confirmPassword, setconfirmPassword] = useState('')
   const [isLogged, setIsLogged] = useState(false)
+  const [openSucessfull, setOpenSucessfull] = useState(false)
+
 
   const handleSave = () =>{
-    if (!name || !birthdate || !email || !password || !confirmPassword) {
-      // Exibe um pop-up caso algum campo esteja vazio
-      alert("Por favor, preencha todos os campos!");
-      return; // Impede que os dados sejam salvos
-    }
-    if(password !== confirmPassword){
-      alert("As senhas não coincidem")
-      return;
-    }
-    const newClient: Client = {name, birthdate, email, telephone, password, announcements: [], logged: false}
-    setdataClients(prevDataClients => {
+  const newClient: Client = {name, birthdate, email, telephone, password, announcements: [], logged: false}
+
+  const emailExists = dataClients.some(
+    (client) => client.email.toString() === newClient.email.toString()
+  );
+
+  if (!name || !birthdate || !email || !password || !confirmPassword) {
+    alert("Por favor, preencha todos os campos!");
+  } else if (password !== confirmPassword) {
+    alert("As senhas não coincidem");
+  } else if (emailExists) {
+    alert("Esse email já existe");
+  } else {
+    setdataClients((prevDataClients) => {
       const updatedClients = [...prevDataClients, newClient];
-      localStorage.setItem('dataClients', JSON.stringify(updatedClients)); 
+      localStorage.setItem("dataClients", JSON.stringify(updatedClients));
       return updatedClients;
     });
-    console.log(dataClients)
-    setName('')
-    setBirthdate('')
-    setEmail('')
-    setPassword('')
-    setconfirmPassword('')
-    setIsLogged(false)
+    setOpenSucessfull(true);
   }
-  
+
+  // Limpa os campos
+  setName("");
+  setBirthdate("");
+  setEmail("");
+  setPassword("");
+  setconfirmPassword("");
+  setIsLogged(false);
+  onClose();
+  console.log("Dados de registro", dataClients)
+};
   return (
     <Modal open={isOpen} onClose={onClose} aria-labelledby="modal-Register" aria-describedby="modal-Register-description">
       <Box sx={style}>
@@ -102,6 +114,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ isOpen, onClose }) => {
           <input 
             className="border-2 border-red-600 rounded"
             value={password}
+            type='password'
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setPassword(e.target.value)
             }}
@@ -110,6 +123,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ isOpen, onClose }) => {
           <input 
             className="border-2 border-red-600 rounded"
             value={confirmPassword}
+            type='password'
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setconfirmPassword(e.target.value)
             }}
@@ -122,6 +136,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ isOpen, onClose }) => {
           onClick={handleSave}
           >Cadastrar</button>
         </div>
+        <Modalregistersucessfull isOpen={openSucessfull} onClose={() => setOpenSucessfull(false)}/>
       </Box>
     </Modal>
   );

@@ -16,30 +16,46 @@ const client : React.FC = () => {
     const [loggedClient, setLoggedClient] = useState<Client[]>([])
     const [existClient, setExistClient] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (typeof window === 'undefined'){
-            const isExistClient = localStorage.getItem('loggedClient')
-            if(isExistClient){
-                setExistClient(true)
-                setLoggedClient(JSON.parse(isExistClient))
-            }
-        }
-    }, [])
-    console.log(loggedClient)
-    
 
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const storedClient = localStorage.getItem('loggedClient');
+            if (storedClient) {
+                setExistClient(true);
+                setLoggedClient(JSON.parse(storedClient));
+            } else {
+                setExistClient(false);
+                setLoggedClient([]);
+            }
+        };
+    
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
+    
+    const handleLogout = () => {
+        setExistClient(false)
+        localStorage.removeItem('loggedClient')
+        setLoggedClient([])
+        alert("Deslogado com sucesso")
+    }
+    const updateClient = (clientData: Client[]) => {
+        setExistClient(true);
+        setLoggedClient(clientData);
+        localStorage.setItem('loggedClient', JSON.stringify(clientData));
+    };
     return (
     <div>
         <Header/>
         <div className='flex bg-gradient-to-r from-gray-900 via-gray-950 to-black min-h-screen items-center justify-center'>
             
-            {existClient ? (
+            {!existClient ? (
                 <div className='flex text-white space-x-8 align-center justify-center'>
                 <button
                 className='p-5 bg-black hover:bg-red-600 border-2 border-gray-800 rounded-md hover:border-red-600 transition duration-300 ease-in-out font-modal' 
                 onClick={openModalLogin}
                 >Fazer login</button>
-                <ModalLogin isOpen={openLogin} onClose={closeModalLogin} />
+                <ModalLogin isOpen={openLogin} onClose={closeModalLogin} onLoginSuccess = {updateClient}/>
                 <button 
                 className='p-5 bg-black hover:bg-red-600 border-2 border-gray-800 rounded-md hover:border-red-600 transition duration-300 ease-in-out font-modal'
                 onClick={openModal}>
@@ -48,8 +64,9 @@ const client : React.FC = () => {
                 <Modalregister isOpen={open} onClose={closeModal} />
             </div>
             ) : (
-                <div>
-                    <h1>Olá </h1>
+                <div className='flex text-white space-x-8 align-center justify-center'>
+                    <h1>Olá {loggedClient[0].name}</h1>
+                    <button onClick={handleLogout}>DESLOGAR</button>
                 </div>
             )}
         </div>

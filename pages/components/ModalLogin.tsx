@@ -8,9 +8,11 @@ import CloseIcon from '@mui/icons-material/Close';
 
 
 
+
 interface ModalLoginProps {
   isOpen: boolean;
   onClose: () => void;
+  onLoginSuccess: (clientData: Client[]) => void; // Callback function to handle successful login
 }
 
 const style = {
@@ -33,8 +35,8 @@ const ModalLogin: React.FC<ModalLoginProps> = ({ isOpen, onClose }) => {
    
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const meuVetorString = localStorage.getItem('dataClients');
-            setStoredDataClients(meuVetorString ? JSON.parse(meuVetorString) : []);
+            const clients = localStorage.getItem('dataClients');
+            setStoredDataClients(clients ? JSON.parse(clients) : []);
         }
     }, []);
 
@@ -43,21 +45,25 @@ const ModalLogin: React.FC<ModalLoginProps> = ({ isOpen, onClose }) => {
             alert("Por favor, preencha todos os campos!");
             return; 
         }
-        const client = dataStoredClients.find((client) => client.email === email && client.password === password)
-        if(client){
-            alert("Login efetuado com sucesso")
-            dataStoredClients.map((client) => {
-                if(client.email === email && client.password === password){
-                    client.logged = true
-                    localStorage.setItem("loggedClient", JSON.stringify(client))
-                }
-            })
-        }
+        const client = dataStoredClients.find((client) => 
+            client.email.toString() === email && 
+            client.password.toString() === password
+        );  
+
+    if (client) {
+        alert("Login efetuado com sucesso");
+        client.logged = true;
+        localStorage.setItem("loggedClient", JSON.stringify(client));
+
+    }
         else{
             alert("Email ou senha incorreta")
         }
-        console.log(client)
+        onClose()
     }
+
+    
+
 
     return (
     <Modal open={isOpen} onClose={onClose} aria-labelledby="modal-login" aria-describedby="modal-login-description">
