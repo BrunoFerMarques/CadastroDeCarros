@@ -4,6 +4,7 @@ import Modalregister from '@/pages/components/Modalregister'
 import ModalLogin from './components/Modallogin'
 import { useEffect } from 'react'
 import { Client } from '@/models/Client'
+import { log } from 'console'
 
 
 const client : React.FC = () => {
@@ -27,15 +28,15 @@ const client : React.FC = () => {
                 setExistClient(false);
                 setLoggedClient([]);
             }
+            console.log(storedClient)
         };
-    
+       
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
     
     const handleLogout = () => {
         setExistClient(false)
-        localStorage.removeItem('loggedClient')
         setLoggedClient([])
         alert("Deslogado com sucesso")
     }
@@ -44,13 +45,16 @@ const client : React.FC = () => {
         setLoggedClient(clientData);
         localStorage.setItem('loggedClient', JSON.stringify(clientData));
     };
+
+
+
     return (
     <div>
         <Header/>
         <div className='flex bg-gradient-to-r from-gray-900 via-gray-950 to-black min-h-screen items-center justify-center'>
             
             {!existClient ? (
-                <div className='flex text-white space-x-8 align-center justify-center'>
+            <div className='flex text-white space-x-8 align-center justify-center'>
                 <button
                 className='p-5 bg-black hover:bg-red-600 border-2 border-gray-800 rounded-md hover:border-red-600 transition duration-300 ease-in-out font-modal' 
                 onClick={openModalLogin}
@@ -64,11 +68,38 @@ const client : React.FC = () => {
                 <Modalregister isOpen={open} onClose={closeModal} />
             </div>
             ) : (
-                <div className='flex text-white space-x-8 align-center justify-center'>
-                    <h1>Olá {loggedClient[0].name}</h1>
-                    <button onClick={handleLogout}>DESLOGAR</button>
-                </div>
+                <div>
+                    <div className='text-white'>
+                        <h1>Olá {loggedClient[0].name}</h1> 
+                        {loggedClient[0].announcements.length > 0 ? (
+                            loggedClient[0].announcements.map((car, index)=>(
+                                <div key={index}>
+                                    <p>
+                                        <strong>Marca:</strong> {car.brand}
+                                    </p>
+                                    <p>
+                                        <strong>Modelo:</strong> {car.model}
+                                    </p>
+                                        <p>
+                                        <strong>Placa:</strong> {car.plate}
+                                    </p>
+                                    <p>
+                                        <strong>Preço:</strong> {car.price}
+                                    </p>
+                                </div>
+                            ))
+                        ) : (
+                            <div>
+                                <h1>voce ainda nao tem anuncios</h1>
+                            </div>
+                        )}
+                    </div>
+                </div> 
+                
+               
+                
             )}
+         
         </div>
     </div>
   )

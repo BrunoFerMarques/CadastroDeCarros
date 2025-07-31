@@ -3,15 +3,16 @@ import { useState } from "react"
 import Header from "./components/Header"
 import { Car } from "../models/Car";
 import Link from "next/link";
-import { LinkOutlined } from "@mui/icons-material";
- 
+
+import { Client } from '@/models/Client';
 const Create = () => {
   const [dataCar, setdataCar] = useState<Car[]>([]);
   const [brand, setBrand] = useState('')
   const [model, setModel] = useState('')
   const [plate, setPlate] = useState('')
   const [price, setPrice] = useState('')
-  const [isLogged, setIsLogged] = useState(false)
+  const [existClient, setExistClient] = useState(false)
+  const [loggedClient, setLoggedClient] = useState<Client[]>([])
   const handleSave = (event: React.FormEvent) => {
     event.preventDefault()
     if (!brand || !model || !plate || !price) {
@@ -36,13 +37,28 @@ const Create = () => {
       localStorage.setItem('dataCar', JSON.stringify(dataCar));
     }
   }, [dataCar]);
-
+  useEffect(() => {
+          const handleStorageChange = () => {
+              const storedClient = localStorage.getItem('loggedClient');
+              if (storedClient) {
+                  setExistClient(true);
+                  setLoggedClient(JSON.parse(storedClient));
+              } else {
+                  setExistClient(false);
+                  setLoggedClient([]);
+              }
+              console.log(storedClient)
+          };
+         
+          window.addEventListener('storage', handleStorageChange);
+          return () => window.removeEventListener('storage', handleStorageChange);
+      }, []);
   return (
 
       <div>
         <Header/>
         <div className=" bg-gradient-to-r from-gray-900 via-gray-950 to-black min-h-screen flex items-center justify-center text-white"> 
-      {isLogged == false ? 
+      {existClient == false ? 
       (
         <div>Para criar um anúncio, você precisa estar logado, <Link href="/client"><div className="font-bold">clique aqui e faça login ou registro. </div></Link></div>
       ) : (

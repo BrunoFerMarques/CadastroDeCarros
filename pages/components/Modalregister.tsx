@@ -6,7 +6,7 @@ import { IconButton } from '@mui/material';
 import { Client } from '@/models/Client';
 import CloseIcon from '@mui/icons-material/Close';
 import Modalregistersucessfull from './Modalregistersucessfull';
-import client from '../client';
+
 
 
 interface ModalRegisterProps {
@@ -38,37 +38,45 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ isOpen, onClose }) => {
   const [openSucessfull, setOpenSucessfull] = useState(false)
 
 
-  const handleSave = () =>{
+const handleSave = () => {
   const newClient: Client = {name, birthdate, email, telephone, password, announcements: [], logged: false}
 
-  const emailExists = dataClients.some(
-    (client) => client.email.toString() === newClient.email.toString()
+  const storedClientsStr = localStorage.getItem("dataClients");
+  const storedClients: Client[] = storedClientsStr ? JSON.parse(storedClientsStr) : [];
+  
+  const emailExists = storedClients.some(
+    (client: Client) => client.email == email
   );
 
   if (!name || !birthdate || !email || !password || !confirmPassword) {
     alert("Por favor, preencha todos os campos!");
-  } else if (password !== confirmPassword) {
+    return;
+  } 
+  
+  if (password != confirmPassword) {
     alert("As senhas não coincidem");
-  } else if (emailExists) {
+    return;
+  } 
+  
+  if (emailExists) {
     alert("Esse email já existe");
-  } else {
-    setdataClients((prevDataClients) => {
-      const updatedClients = [...prevDataClients, newClient];
-      localStorage.setItem("dataClients", JSON.stringify(updatedClients));
-      return updatedClients;
-    });
-    setOpenSucessfull(true);
+    return;
   }
 
-  // Limpa os campos
+  const updatedClients = [...storedClients, newClient];
+  localStorage.setItem("dataClients", JSON.stringify(updatedClients));
+  setdataClients(updatedClients);
+
   setName("");
   setBirthdate("");
   setEmail("");
+  setTelephone("");
   setPassword("");
   setconfirmPassword("");
   setIsLogged(false);
-  onClose();
-  console.log("Dados de registro", dataClients)
+  
+  
+  setOpenSucessfull(true);
 };
   return (
     <Modal open={isOpen} onClose={onClose} aria-labelledby="modal-Register" aria-describedby="modal-Register-description">

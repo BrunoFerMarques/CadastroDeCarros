@@ -7,12 +7,10 @@ import { Client } from '@/models/Client';
 import CloseIcon from '@mui/icons-material/Close';
 
 
-
-
 interface ModalLoginProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: (clientData: Client[]) => void; // Callback function to handle successful login
+  onLoginSuccess: (clientData: Client[]) => void; 
 }
 
 const style = {
@@ -27,12 +25,13 @@ const style = {
   p: 4,
 };
 
-const ModalLogin: React.FC<ModalLoginProps> = ({ isOpen, onClose }) => {
+const ModalLogin: React.FC<ModalLoginProps> = ({ isOpen, onClose, onLoginSuccess }) => {
     const [dataStoredClients, setStoredDataClients] = useState<Client[]>([])
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [loggedClient, setLoggedClient] = useState<Client[]>([])
+    const [openSucessfull, setOpenSucessfull] = useState(false)
 
-   
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const clients = localStorage.getItem('dataClients');
@@ -46,16 +45,20 @@ const ModalLogin: React.FC<ModalLoginProps> = ({ isOpen, onClose }) => {
             return; 
         }
         const client = dataStoredClients.find((client) => 
-            client.email.toString() === email && 
-            client.password.toString() === password
+            client.email.toString() == email && 
+            client.password.toString() == password
         );  
 
-    if (client) {
-        alert("Login efetuado com sucesso");
-        client.logged = true;
-        localStorage.setItem("loggedClient", JSON.stringify(client));
+        if (client) {
+            client.logged = true;
+            const clientArray = [client];
+            localStorage.setItem("loggedClient", JSON.stringify(clientArray));
+            setLoggedClient(clientArray);
+            onLoginSuccess(clientArray);
+            alert("Login efetuado com sucesso");
+            setOpenSucessfull(true)
+        }
 
-    }
         else{
             alert("Email ou senha incorreta")
         }
